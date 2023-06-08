@@ -1,6 +1,7 @@
-use strum_macros::{AsRefStr, IntoStaticStr};
+use strum_macros::IntoStaticStr;
 
 #[allow(non_camel_case_types)]
+#[allow(clippy::upper_case_acronyms)]
 #[repr(u8)]
 #[derive(IntoStaticStr, num_enum::TryFromPrimitive, num_enum::IntoPrimitive)]
 pub(crate) enum CecOpCode {

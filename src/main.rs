@@ -8,12 +8,12 @@ use core::iter::once;
 use defmt::*;
 use embassy_executor::Spawner;
 use embassy_futures::select::{select, Either};
+use embassy_rp::gpio::Pin;
 use embassy_rp::gpio::{self, OutputOpenDrain};
-use embassy_rp::gpio::{Input, Pin};
 use embassy_rp::i2c::{Config, I2c};
 use embassy_time::{Duration, Instant, Timer};
 
-use gpio::{Level, Output};
+use gpio::Level;
 use heapless::{String, Vec};
 use num_enum::IntoPrimitive;
 use ssd1306::mode::DisplayConfig;
@@ -21,8 +21,6 @@ use ssd1306::prelude::Brightness;
 use ssd1306::rotation::DisplayRotation;
 use ssd1306::size::DisplaySize128x64;
 use ssd1306::{I2CDisplayInterface, Ssd1306};
-use strum_macros::Display;
-use ufmt::uwrite;
 use {defmt_rtt as _, panic_probe as _};
 
 use core::write;
@@ -145,14 +143,16 @@ async fn cec_decode<P: Pin>(
 
             pin.wait_for_falling_edge().await;
         }
+
+        let dest = LogicalAddress(if data.is_empty() {
+            bits & 0x0f
+        } else {
+            data[0] & 0x0f
+        });
+
         let mut ack_low = false;
         {
             //ACK handling
-            let dest = LogicalAddress(if data.is_empty() {
-                bits & 0x0f
-            } else {
-                data[0] & 0x0f
-            });
             if dest == logical_address {
                 info!("ACK for {} ", dest.0);
                 pin.set_low();
@@ -167,11 +167,6 @@ async fn cec_decode<P: Pin>(
             }
         }
 
-        let firstblock = if data.is_empty() { bits } else { data[0] };
-        let (initiator, dest) = (
-            LogicalAddress((firstblock & 0xf0) >> 4),
-            LogicalAddress(firstblock & 0x0f),
-        );
         data.push(bits).unwrap();
         if (!dest.is_broadcast() && ack_low) || (dest.is_broadcast() && !ack_low) {
         } else {
@@ -203,7 +198,7 @@ async fn cec_decode<P: Pin>(
 #[derive(defmt::Format)]
 enum CecSendError {
     Nack,
-    Other(&'static str),
+    _Other(&'static str),
 }
 
 async fn cec_send<P: Pin>(
@@ -281,7 +276,7 @@ async fn cec_send<P: Pin>(
 }
 
 #[embassy_executor::main]
-async fn main(spawner: Spawner) {
+async fn main(_spawner: Spawner) {
     let p = embassy_rp::init(Default::default());
 
     //spawner.spawn(alive_logger()).unwrap();
