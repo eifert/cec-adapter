@@ -4,7 +4,7 @@ use strum_macros::IntoStaticStr;
 #[allow(clippy::upper_case_acronyms)]
 #[repr(u8)]
 #[derive(IntoStaticStr, num_enum::TryFromPrimitive, num_enum::IntoPrimitive)]
-pub(crate) enum CecOpCode {
+pub enum CecOpCode {
     FEATURE_ABORT = 0x00,
     IMAGE_VIEW_ON = 0x04,
     TUNER_STEP_INCREMENT = 0x05,
@@ -79,7 +79,7 @@ pub(crate) enum CecOpCode {
 #[allow(clippy::upper_case_acronyms)]
 #[repr(u8)]
 #[derive(IntoStaticStr, num_enum::TryFromPrimitive, num_enum::IntoPrimitive)]
-pub(crate) enum CecDeviceType {
+pub enum CecDeviceType {
     TV = 0,
     RECORDING_DEVICE = 1,
     RESERVED = 2,

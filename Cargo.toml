@@ -32,7 +32,7 @@ ssd1306 = "0.8.0"
 display-interface = "0.4.1"
 byte-slice-cast = { version = "1.2.0", default-features = false }
 smart-leds = "0.3.0"
-heapless = {version = "0.7.16", features = ["ufmt-impl"]}
+heapless = {version = "0.7.16", features = ["defmt-impl"]}
 ufmt = "0.2.0"
 
 embedded-hal-1 = { package = "embedded-hal", version = "=1.0.0-alpha.10" }
