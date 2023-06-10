@@ -3,8 +3,6 @@ name = "cec-adapter"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 embassy-embedded-hal = { version = "0.1.0", path = "../embassy/embassy-embedded-hal", features = ["defmt"] }
 embassy-sync = { version = "0.2.0", path = "../embassy/embassy-sync", features = ["defmt"] }
@@ -52,4 +50,9 @@ strum_macros = "0.24"
 num_enum = {version="0.5.7", default-features = false}
 
 [profile.release]
-debug = true
+#debug = true
+opt-level = "z"     # Optimize for size.
+lto = true          # Enable Link Time Optimization
+codegen-units = 1   # Reduce number of codegen units to increase optimizations.
+panic = "abort"     # Abort on panic
+#strip = true        #

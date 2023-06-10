@@ -74,3 +74,18 @@ pub(crate) enum CecOpCode {
     TERMINATE_ARC = 0xC5,
     ABORT = 0xFF,
 }
+
+#[allow(non_camel_case_types)]
+#[allow(clippy::upper_case_acronyms)]
+#[repr(u8)]
+#[derive(IntoStaticStr, num_enum::TryFromPrimitive, num_enum::IntoPrimitive)]
+pub(crate) enum CecDeviceType {
+    TV = 0,
+    RECORDING_DEVICE = 1,
+    RESERVED = 2,
+    TUNER = 3,
+    PLAYBACK_DEVICE = 4,
+    AUDIO_SYSTEM = 5,
+    PURE_CEC_SWITCH = 6,
+    VIDEO_PROCESSOR = 7,
+}
