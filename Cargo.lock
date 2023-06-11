@@ -129,8 +129,6 @@ dependencies = [
  "byte-slice-cast 1.2.2",
  "cortex-m",
  "cortex-m-rt",
- "cyw43",
- "cyw43-pio",
  "defmt",
  "defmt-rtt",
  "display-interface",
@@ -234,35 +232,6 @@ name = "crunchy"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a81dae078cea95a014a339291cec439d2f232ebe854a9d672b796c6afafa9b7"
-
-[[package]]
-name = "cyw43"
-version = "0.1.0"
-dependencies = [
- "atomic-polyfill 0.1.11",
- "cortex-m",
- "cortex-m-rt",
- "defmt",
- "embassy-futures",
- "embassy-net-driver-channel",
- "embassy-sync",
- "embassy-time",
- "embedded-hal 1.0.0-alpha.10",
- "futures",
- "num_enum",
-]
-
-[[package]]
-name = "cyw43-pio"
-version = "0.1.0"
-dependencies = [
- "cyw43",
- "defmt",
- "embassy-rp",
- "fixed",
- "pio",
- "pio-proc",
-]
 
 [[package]]
 name = "darling"
@@ -410,6 +379,7 @@ checksum = "7fcaabb2fef8c910e7f4c7ce9f67a1283a1715879a7c230ca9d6d1ae31f16d91"
 [[package]]
 name = "embassy-cortex-m"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "atomic-polyfill 1.0.2",
  "cfg-if",
@@ -424,6 +394,7 @@ dependencies = [
 [[package]]
 name = "embassy-embedded-hal"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "defmt",
  "embassy-futures",
@@ -439,6 +410,7 @@ dependencies = [
 [[package]]
 name = "embassy-executor"
 version = "0.2.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "atomic-polyfill 1.0.2",
  "cortex-m",
@@ -453,10 +425,12 @@ dependencies = [
 [[package]]
 name = "embassy-futures"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 
 [[package]]
 name = "embassy-hal-common"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "defmt",
  "num-traits",
@@ -465,6 +439,7 @@ dependencies = [
 [[package]]
 name = "embassy-macros"
 version = "0.2.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -475,10 +450,12 @@ dependencies = [
 [[package]]
 name = "embassy-net-driver"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 
 [[package]]
 name = "embassy-net-driver-channel"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "embassy-futures",
  "embassy-net-driver",
@@ -488,6 +465,7 @@ dependencies = [
 [[package]]
 name = "embassy-rp"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "atomic-polyfill 1.0.2",
  "cfg-if",
@@ -523,6 +501,7 @@ dependencies = [
 [[package]]
 name = "embassy-sync"
 version = "0.2.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "cfg-if",
  "critical-section",
@@ -535,6 +514,7 @@ dependencies = [
 [[package]]
 name = "embassy-time"
 version = "0.1.1"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "atomic-polyfill 1.0.2",
  "cfg-if",
@@ -550,6 +530,7 @@ dependencies = [
 [[package]]
 name = "embassy-usb"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "defmt",
  "embassy-futures",
@@ -564,6 +545,7 @@ dependencies = [
 [[package]]
 name = "embassy-usb-driver"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "defmt",
 ]
@@ -571,6 +553,7 @@ dependencies = [
 [[package]]
 name = "embassy-usb-logger"
 version = "0.1.0"
+source = "git+https://github.com/embassy-rs/embassy.git?rev=f2c2536c#f2c2536cf3d67e4e28616f631b6bdde789b15560"
 dependencies = [
  "embassy-futures",
  "embassy-sync",
