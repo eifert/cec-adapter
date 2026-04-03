@@ -4,7 +4,7 @@ use defmt::*;
 use embassy_futures::join::join;
 use embassy_futures::select::{select, select3, Either, Either3};
 use embassy_rp::gpio::OutputOpenDrain;
-use embassy_rp::gpio::{AnyPin, Pin};
+use embassy_rp::gpio::Pin;
 use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::channel::Channel;
 use embassy_sync::mutex::Mutex;
@@ -69,7 +69,7 @@ impl SignalFreeKind {
     }
 }
 
-async fn _await_signal_free<P: Pin>(pin: &mut OutputOpenDrain<'_, P>, kind: SignalFreeKind) {
+async fn _await_signal_free<P: Pin>(pin: &mut OutputOpenDrain<'_>, kind: SignalFreeKind) {
     // Cf. CEC 9.1: Signal Free Time (HDMI spec 1.4)
     if pin.is_low() {
         pin.wait_for_rising_edge().await;
@@ -94,8 +94,8 @@ pub enum CecDecodeError {
     Other(&'static str),
 }
 
-async fn cec_decode<P: Pin>(
-    pin: &mut OutputOpenDrain<'_, P>,
+async fn cec_decode(
+    pin: &mut OutputOpenDrain<'_>,
     logical_address: LogicalAddress,
 ) -> Result<CecFrame, CecDecodeError> {
     let mut data = Vec::<u8, MAX_CEC_OPERANDS>::new();
@@ -186,10 +186,7 @@ pub enum CecSendError {
     _Other(&'static str),
 }
 
-async fn cec_send<P: Pin>(
-    pin: &mut OutputOpenDrain<'_, P>,
-    frame: &CecFrame,
-) -> Result<(), CecSendError> {
+async fn cec_send(pin: &mut OutputOpenDrain<'_>, frame: &CecFrame) -> Result<(), CecSendError> {
     let mut have_nack_blocks = false;
     {
         //Start bit
@@ -259,7 +256,7 @@ static CEC_INCOMING_CHANNEL: PubSubChannel<
 > = PubSubChannel::new();
 
 #[embassy_executor::task]
-pub async fn cec_line_handler(mut pin: OutputOpenDrain<'static, AnyPin>, dev_addr: LogicalAddress) {
+pub async fn cec_line_handler(mut pin: OutputOpenDrain<'static>, dev_addr: LogicalAddress) {
     let mut to_send = Deque::<CecFrame, 8>::new();
     let mut send_wait: Option<Duration> = None;
     let mut retry_frame = None;
@@ -282,7 +279,7 @@ pub async fn cec_line_handler(mut pin: OutputOpenDrain<'static, AnyPin>, dev_add
 
         match select3(
             pin.wait_for_falling_edge(),
-            CEC_OUTGOING_CHANNEL.recv(),
+            CEC_OUTGOING_CHANNEL.receive(),
             Timer::after(remaining_wait),
         )
         .await
@@ -408,7 +405,7 @@ pub async fn send_with_result(frame: CecFrame) -> Result<(), CecSendError> {
     info!("Sending");
     join(
         CEC_OUTGOING_CHANNEL.send(frame),
-        CEC_SENDRESULT_CHANNEL.recv(),
+        CEC_SENDRESULT_CHANNEL.receive(),
     )
     .await
     .1

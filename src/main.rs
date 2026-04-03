@@ -1,13 +1,12 @@
 #![no_std]
 #![no_main]
-#![feature(type_alias_impl_trait)]
 
 use core::fmt::Write;
+use core::str::FromStr;
 
 use cec_adapter::{cec_types, send_with_result, CecDecodeError, CecFrame, LogicalAddress};
 use defmt::*;
 use embassy_executor::Spawner;
-use embassy_rp::gpio::Pin;
 use embassy_rp::gpio::{self, OutputOpenDrain};
 use embassy_rp::i2c::{Config, I2c};
 use embassy_sync::pubsub::WaitResult;
@@ -87,12 +86,12 @@ async fn main(spawner: Spawner) {
     terminal.clear().unwrap();
     terminal.set_brightness(Brightness::NORMAL).unwrap();
     terminal.set_display_on(true).unwrap();
-    terminal.write_str("Hi, I'm CEC-Igel").unwrap();
+    terminal.write_str("Hi, I'm CEC-Igel!").unwrap();
 
-    let cec0 = OutputOpenDrain::new(p.PIN_0.degrade(), Level::High);
+    let cec0 = OutputOpenDrain::new(p.PIN_0, Level::High);
     let my_cec_address = LogicalAddress(5);
 
-    cec_adapter::spawn_cec_handling_task(spawner, cec0, my_cec_address).unwrap();
+    cec_adapter::spawn_cec_handling_task(spawner, cec0, my_cec_address);
 
     if (send_with_result(CecFrame {
         initiator: my_cec_address,
@@ -116,33 +115,27 @@ async fn main(spawner: Spawner) {
     })
     .await;
 
-    spawner
-        .spawn(cec_device_alive_poller(
-            my_cec_address,
-            LogicalAddress(4),
-            Duration::from_secs(5),
-        ))
-        .unwrap();
+    spawner.spawn(unwrap!(cec_device_alive_poller(
+        my_cec_address,
+        LogicalAddress(4),
+        Duration::from_secs(5),
+    )));
 
-    spawner
-        .spawn(cec_device_alive_poller(
-            my_cec_address,
-            LogicalAddress(0),
-            Duration::from_secs(5),
-        ))
-        .unwrap();
+    spawner.spawn(unwrap!(cec_device_alive_poller(
+        my_cec_address,
+        LogicalAddress(0),
+        Duration::from_secs(5),
+    )));
 
-    spawner
-        .spawn(cec_periodic_message_task(
-            CecFrame {
-                initiator: my_cec_address,
-                dest: LogicalAddress(4),
-                opcode: Some(CecOpCode::GIVE_PHYSICAL_ADDRESS as u8),
-                operands: None,
-            },
-            Duration::from_secs(5),
-        ))
-        .unwrap();
+    spawner.spawn(unwrap!(cec_periodic_message_task(
+        CecFrame {
+            initiator: my_cec_address,
+            dest: LogicalAddress(4),
+            opcode: Some(CecOpCode::GIVE_PHYSICAL_ADDRESS as u8),
+            operands: None,
+        },
+        Duration::from_secs(5),
+    )));
 
     info!("Listening for messages");
     let mut cec_incoming_subscriber = cec_adapter::subscribe_incoming().unwrap();
@@ -192,11 +185,11 @@ async fn main(spawner: Spawner) {
                         cec_types::CecOpCode::try_from(opcode)
                             .map(|v| {
                                 let s: &str = v.into();
-                                String::<OP_STR_LEN>::from(s)
+                                String::<OP_STR_LEN>::from_str(s).unwrap()
                             })
-                            .unwrap_or(String::<OP_STR_LEN>::from(opcode))
+                            .unwrap_or(String::<OP_STR_LEN>::try_from(opcode).unwrap())
                     })
-                    .unwrap_or(String::<OP_STR_LEN>::from("(None)"));
+                    .unwrap_or(String::<OP_STR_LEN>::from_str("(None)").unwrap());
 
                 let mut operands = String::<100>::new();
                 frame.operands.iter().flatten().for_each(|v| {
